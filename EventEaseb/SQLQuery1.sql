@@ -1,66 +1,56 @@
--- Create Students table 
-CREATE TABLE Students (
-	Id INT IDENTITY(1,1) PRIMARY KEY, 
-	Name NVARCHAR(100) NOT NULL, 
-	Email NVARCHAR(100) UNIQUE NOT NULL, 
-	DegreeProgram NVARCHAR(100) NOT NULL, 
-	YearOfStudy INT NOT NULL 
+ USE master;
+ USE EventEaseDb;
+CREATE TABLE Venue (
+    VenueId INT PRIMARY KEY IDENTITY,
+    VenueName NVARCHAR(100) NOT NULL,
+    Location NVARCHAR(200) NOT NULL,
+    Capacity INT NOT NULL,
+    ImageUrl NVARCHAR(500)
 );
 
-
--- Create Company table 
-CREATE TABLE Company (
-	Id INT IDENTITY(1,1) PRIMARY KEY, 
-	Name NVARCHAR(100) NOT NULL,
-	Industry VARCHAR(100) NOT NULL, 
-	Location NVARCHAR(255) NOT NULL, 
-	ContactEmail NVARCHAR(100) UNIQUE NOT NULL 
-
+CREATE TABLE Event (
+    EventId INT PRIMARY KEY IDENTITY,
+    EventName NVARCHAR(100) NOT NULL,
+    StartDate DATETIME NOT NULL,
+    EndDate DATETIME NOT NULL,
+    Description NVARCHAR(MAX),
+    ImageUrl NVARCHAR(500)
 );
 
-
---Create Internships table (linking Students and Companies) 
-CREATE TABLE Internships (  
-	Id INT IDENTITY(1,1) PRIMARY KEY, 
-	StudentId INT NOT NULL, 
-	CompanyId INT NOT NULL, 
-	Position NVARCHAR(108) NOT NULL, 
-	StartDate DATE NOT NULL, 
-	EndDate DATE NOT NULL, 
-	HoursLogged INT DEFAULT 0, 
-	SupervisorFeedback NVARCHAR(500), 
-	CONSTRAINT FK_Internships_Students FOREIGN KEY (StudentId) REFERENCES Students(Id), 
-	CONSTRAINT FK_Internships_Companies FOREIGN KEY (CompanyId) REFERENCES Company(Id) 
+CREATE TABLE Booking (
+    BookingId INT PRIMARY KEY IDENTITY,
+    EventId INT NOT NULL FOREIGN KEY REFERENCES Event(EventId),
+    VenueId INT NOT NULL FOREIGN KEY REFERENCES Venue(VenueId),
+    BookingDate DATETIME NOT NULL
 );
 
 
 
 
---Insert sample data 
-INSERT INTO Students (Name, Email, DegreeProgram, YearOfStudy) 
-VALUES ('Bob Smith', 'bob@example.com', 'Computer Science', 2),
-('Johnson Alice', 'johnson@example.com', 'Information systems', 3);
+-- Insert sample venues
+INSERT INTO Venue (VenueName, Location, Capacity, ImageUrl)
+VALUES 
+('Grand Hall', '123 Main Street, City Center', 500, 'https://example.com/grandhall.jpg'),
+('Conference Room A', '456 Business Ave, Downtown', 100, 'https://example.com/conferencerooma.jpg'),
+('Outdoor Pavilion', '789 Parkside, Riverside', 300, 'https://example.com/pavilion.jpg');
+
+-- Insert sample events
+INSERT INTO Event (EventName, StartDate, EndDate, Description, ImageUrl)
+VALUES 
+('Tech Conference 2025', '2025-06-10 09:00:00', '2025-06-12 18:00:00', 'A gathering of tech enthusiasts and professionals.', 'https://example.com/techconference.jpg'),
+('Wedding Reception', '2025-08-15 17:00:00', '2025-08-15 23:00:00', 'A beautiful wedding celebration.', 'https://example.com/wedding.jpg'),
+('Music Festival', '2025-09-01 14:00:00', '2025-09-03 23:59:00', 'An annual music festival featuring top artists.', 'https://example.com/musicfestival.jpg');
+
+-- Insert sample bookings
+INSERT INTO Booking (EventId, VenueId, BookingDate)
+VALUES 
+(1, 2, '2025-06-01 10:00:00'), -- Tech Conference booked in Conference Room A
+(2, 1, '2025-08-01 14:00:00'), -- Wedding Reception booked in Grand Hall
+(3, 3, '2025-08-20 12:00:00'); -- Music Festival booked in Outdoor Pavilion
 
 
 
 
-INSERT INTO Company (Name, Industry, Location, ContactEmail)
-VALUES ('TechCorp', 'Software Devel Development', 'New York, USA', 'contact@techcorp.com'), 
-('HealthCare Inc.', 'Healthcare Technology', 'Los Angeles, USA', 'info@healthcareinc.com');
-
-INSERT INTO Internships (StudentId, CompanyId, Position, StartDate, EndDate, HoursLogged, SupervisorFeedback) 
-VALUES (1, 1, 'Software Developer Intern', '2025-06-01', '2025-09-01', 120, 'Great progress on API development.'), 
-(2, 2, 'Data Analyst Intern', '2015-06-15', '2025-09-15', 80, 'Strong analytical skills.' ); 
-
-SELECT * FROM Students;
-SELECT * FROM Company;
-SELECT * FROM Internships;
-
---drop table Internships;
---drop table Students;
---drop table Company;
-
--- Below codes work for Azure database to drop tables
---drop table Internships;
---drop table [dbo].Students;
---drop table [dbo].Company;
+SELECT * FROM Venue;
+SELECT * FROM Event;
+SELECT * FROM Booking;
